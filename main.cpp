@@ -1,6 +1,11 @@
 #include <iostream>
 #include "bank_customer.h"
 #include "buyer.h"
+#include "seller.h" // Make sure seller.h defines the Seller class
+#include "item.h"
+#include <string>
+#include <cctype>
+#include <limits>   
 
 enum PrimaryPrompt{LOGIN, REGISTER, EXIT, ADMIN_LOGIN};
 enum RegisterPrompt{CREATE_BUYER, CREATE_SELLER, BACK};
@@ -8,6 +13,7 @@ using namespace std;
 
 int main() {
     //create a loop prompt 
+    
     PrimaryPrompt prompt = LOGIN;
     RegisterPrompt regPrompt = CREATE_BUYER;
     const string ADMIN_USERNAME = "root";
@@ -104,6 +110,65 @@ int main() {
                             break;
                     }
                 }
+                {
+                    string name, homeAddress, phone, email;
+                    cout << "Enter Name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    cout << "Enter Home Address: ";
+                    getline(cin, homeAddress);
+                    cout << "Enter Phone Number: ";
+                    getline(cin, phone);
+                    cout << "Enter Email: ";
+                    getline(cin, email);
+
+                    // Create Buyer account (assuming Buyer class has a suitable constructor)
+                    Buyer* newBuyer = new Buyer(name, homeAddress, phone, email, /* add required arguments here, e.g. initialDeposit, id, etc. */); // <-- Update arguments as per Buyer.h
+                    cout << "Buyer account created successfully." << endl;
+
+                    // Optionally create Seller account linked to Buyer
+                    char createSeller;
+                    cout << "Do you want to create a Seller account linked to this Buyer? (y/n): ";
+                    cin >> createSeller;
+                    if (tolower(createSeller) == 'y') {
+                        string sellerHomeAddress, sellerPhone, sellerEmail;
+                        string storeName, storeAddress, storePhone, storeEmail;
+                        double initialDeposit;
+
+                        cin.ignore();
+                        cout << "Enter Seller Home Address: ";
+                        getline(cin, sellerHomeAddress);
+                        cout << "Enter Seller Phone Number: ";
+                        getline(cin, sellerPhone);
+                        cout << "Enter Seller Email: ";
+                        getline(cin, sellerEmail);
+
+                        cout << "Enter Store Name: ";
+                        getline(cin, storeName);
+                        cout << "Enter Store Address: ";
+                        getline(cin, storeAddress);
+                        cout << "Enter Store Phone Number: ";
+                        getline(cin, storePhone);
+                        cout << "Enter Store Email: ";
+                        getline(cin, storeEmail);
+
+                        cout << "Enter Initial Deposit Amount: ";
+                        cin >> initialDeposit;
+
+                        // Create Seller account (assuming Seller class has a suitable constructor)
+                        Seller* newSeller = new Seller(
+                            name, sellerHomeAddress, sellerPhone, sellerEmail,
+                            storeName, storeAddress, storePhone, storeEmail,
+                            initialDeposit, newBuyer
+                        );
+                        cout << "Seller account created and linked to Buyer successfully." << endl;
+                        cout << "Logged in as Seller." << endl;
+                        // Proceed to Seller menu (not implemented)
+                    } else {
+                        cout << "Logged in as Buyer." << endl;
+                        // Proceed to Buyer menu (not implemented)
+                    }
+                }
                 /* if register is selected then went throuhh registration process:
                 1. Create a new Buyer Account
                 Must provides: Name, Home Address, Phone number, Email
@@ -123,7 +188,50 @@ int main() {
                 cin >> username;
                 cout << "Password: ";
                 cin >> password;
+            if (username == ADMIN_USERNAME && password == ADMIN_PASSWORD) {
+                cout << "Admin login successful." << endl;
+                enum AdminPrompt {ACCOUNT_MANAGEMENT = 1, SYSTEM_REPORT, BACK_TO_MAIN};
+                int adminChoice = 0;
+                while (adminChoice != BACK_TO_MAIN) {
+                    cout << "Admin Menu:" << endl;
+                    cout << "1. Account Management" << endl;
+                    cout << "2. System Report" << endl;
+                    cout << "3. Back to Main Menu" << endl;
+                    cin >> adminChoice;
+                    switch (adminChoice) {
+                        case ACCOUNT_MANAGEMENT:
+                            cout << "Account Management:" << endl;
+                            cout << "1. View All Buyers" << endl;
+                            cout << "2. View All Sellers" << endl;
+                            cout << "3. View Buyer/Seller Details" << endl;
+                            cout << "4. Search Buyer/Seller" << endl;
+                            cout << "5. Create Buyer/Seller/Bank Account" << endl;
+                            cout << "6. Remove Buyer/Seller by ID" << endl;
+                            cout << "7. Back" << endl;
+                            int accChoice;
+                            cin >> accChoice;
+                            // Placeholder for actual account management logic
+                            cout << "Feature not implemented yet." << endl;
+                            break;
+                        case SYSTEM_REPORT:
+                            cout << "System Report:" << endl;
+                            cout << "Total Buyers: [not implemented]" << endl;
+                            cout << "Total Sellers: [not implemented]" << endl;
+                            cout << "Total Banking Accounts: [not implemented]" << endl;
+                            break;
+                        case BACK_TO_MAIN:
+                            cout << "Returning to main menu." << endl;
+                            break;
+                        default:
+                            cout << "Invalid option." << endl;
+                            break;
+                    }
+                }
+            } else {
+                cout << "Admin login failed." << endl;
+            }
                 /** After login create a sub prompt that provides the following features
+            
                 1. Account Management
                     - View All Buyers, Sellers
                     - View All details of Buyers, Sellers
@@ -134,6 +242,7 @@ int main() {
                     - Total number of Buyers, Sellers
                     - Total number of Banking Accounts
                 */
+            
                 break;
             default:
                 cout << "Invalid option." << endl;
